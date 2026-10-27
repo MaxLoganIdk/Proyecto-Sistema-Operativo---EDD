@@ -74,5 +74,37 @@ public:
             cout << "[ERROR] No hay procesos registrados." << endl;
             return;
 
-//meza poma jhosep
+//Maldonado Meza Joseph 
+void pushMemoria(int idBloque, int tamanio, int idProceso) {
+    NodoPila* nuevo = new NodoPila{idBloque, tamanio, idProceso, topePila};
+    topePila = nuevo;
+    cout << "[Gestor Memoria] Bloque ID " << idBloque << " (" << tamanio 
+         << " KB) reservado para Proceso ID " << idProceso << "\n";
+}
+
+void popMemoria() {
+    if (!topePila) {
+        cout << "[Gestor Memoria] La pila de memoria esta vacia.\n";
+        return;
+    }
+    NodoPila* temp = topePila;
+    cout << "[Gestor Memoria] Liberando bloque ID " << temp->idBloque 
+         << " (" << temp->tamanio << " KB) del Proceso ID " << temp->idProceso << "\n";
+    
+    topePila = topePila->siguiente;
+    delete temp;
+}
+void mostrarPilaMemoria() {
+    cout << "    ESTADO DE LA MEMORIA (PILA)     \n";
+    NodoPila* aux = topePila;
+    if (!aux) {
+        cout << "No hay bloques de memoria asignados.\n";
+        return;
+    }
+    while (aux != nullptr) {
+        cout << "| Bloque ID: " << aux->idBloque << " | Tamanio: " << aux->tamanio 
+             << " KB | Proceso Asignado ID: " << aux->idProceso << " |\n";
+        aux = aux->siguiente;
+    }
+}
 
