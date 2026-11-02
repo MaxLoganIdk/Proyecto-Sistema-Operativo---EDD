@@ -472,94 +472,84 @@ void cargarSistema(GestorProcesos& gp, PlanificadorCPU& cpu, GestorMemoria& mem)
     cout << "[EXITO] Datos cargados correctamente desde 'sistema.txt'\n";
 }
 
+// ==========================================
 // MENÚ PRINCIPAL
+// ==========================================
 
-int main() 
-{
-	setlocale(LC_ALL,"spanish");
+int main() {
     GestorProcesos gp;
     PlanificadorCPU cpu;
     GestorMemoria mem;
 
-    cargarSistema(gp, cpu, mem);    // Cargar datos guardados al iniciar
+    cargarSistema(gp, cpu, mem);
 
-    int op;
+    int op = 0;
 
-    do 
-	{
-    	
-        cout << "\n----------------------------------------\n";
-        cout << "   SISTEMA DE GESTION DE PROCESOS         \n";
-        cout << "----------------------------------------- \n";
-        cout << "1. Gestor de procesos\n";
-        cout << "2. Planificador de CPU\n";
-        cout << "3. Gestor de memoria\n";
-        cout << "4. Guardar estado del sistema\n";
+    do {
+        cout << "\n========================================\n";
+        cout << "    SISTEMA DE GESTION DE PROCESOS      \n";
+        cout << "========================================\n";
+        cout << "1. Gestor de Procesos (Lista Enlazada)\n";
+        cout << "2. Planificador de CPU (Cola Prioridad)\n";
+        cout << "3. Gestor de Memoria (Pila)\n";
+        cout << "4. Guardar Estado del Sistema\n";
         cout << "5. Salir\n";
-        cout << "Seleccione una opción: "; cin >> op;
+        op = leerEntero("Seleccione una opcion: ");
 
-        //GESTOR DE PROCESOS
-        if (op == 1) 
-		{      	
-            int subOp;
-            cout << "\n   GESTOR DE PROCESOS \n";
+        if (op == 1) {
+            cout << "\n--- GESTOR DE PROCESOS ---\n";
             cout << "1. Registrar proceso\n";
-            cout << "2. Eliminar proceso\n";
-            cout << "3. Buscar por ID\n";
-            cout << "4. Buscar por nombre\n";
-            cout << "5. Modificar prioridad\n";
-            cout << "6. Mostrar todos\n";
-            cout << "Seleccione: "; cin >> subOp;
+            cout << "2. Eliminar proceso por ID\n";
+            cout << "3. Buscar proceso por ID\n";
+            cout << "4. Buscar proceso por Nombre\n";
+            cout << "5. Modificar prioridad de proceso\n";
+            cout << "6. Mostrar todos los procesos\n";
+            int subOp = leerEntero("Seleccione una sub-opcion: ");
 
             if (subOp == 1) {
-                int id, prioridad;
-                string nombre;
-                cout << "ID: "; cin >> id;
-                cout << "Nombre: "; cin >> nombre;
-                cout << "Prioridad: "; cin >> prioridad;
+                int id = leerEntero("Ingrese ID del proceso: ");
+                char nombre[50];
+                leerTexto("Ingrese Nombre del proceso: ", nombre);
+                int prioridad = leerEntero("Ingrese Prioridad: ");
                 gp.insertar(id, nombre, prioridad);
 
             } else if (subOp == 2) {
-                int id;
-                cout << "ID a eliminar: "; cin >> id;
+                int id = leerEntero("Ingrese ID a eliminar: ");
                 gp.eliminar(id);
 
             } else if (subOp == 3) {
-                int id;
-                cout << "ID a buscar: "; cin >> id;
-                gp.buscarPorID(id);
+                int id = leerEntero("Ingrese ID a buscar: ");
+                gp.mostrarProcesoPorID(id);
 
             } else if (subOp == 4) {
-                string nombre;
-                cout << "Nombre a buscar: "; cin >> nombre;
+                char nombre[50];
+                leerTexto("Ingrese Nombre a buscar: ", nombre);
                 gp.buscarPorNombre(nombre);
 
             } else if (subOp == 5) {
-                int id, nuevaPrioridad;
-                cout << "ID del proceso: "; cin >> id;
-                cout << "Nueva prioridad: "; cin >> nuevaPrioridad;
+                int id = leerEntero("Ingrese ID del proceso: ");
+                int nuevaPrioridad = leerEntero("Ingrese nueva prioridad: ");
                 gp.modificarPrioridad(id, nuevaPrioridad);
 
             } else if (subOp == 6) {
                 gp.mostrar();
             }
 
-        // PLANIFICADOR CPU
         } else if (op == 2) {
-            int subOp;
-            cout << "\n  PLANIFICADOR DE CPU \n";
-            cout << "1. Encolar proceso\n";
-            cout << "2. Ejecutar siguiente proceso\n";
-            cout << "3. Ver cola actual\n";
-            cout << "Seleccione una opción: "; cin >> subOp;
+            cout << "\n--- PLANIFICADOR DE CPU ---\n";
+            cout << "1. Encolar proceso existente por ID\n";
+            cout << "2. Ejecutar siguiente proceso en CPU\n";
+            cout << "3. Ver cola de ejecucion actual\n";
+            int subOp = leerEntero("Seleccione una sub-opcion: ");
 
             if (subOp == 1) {
-                int id, prioridad;
-                string nombre;
-                cout << "ID: "; cin >> id;
-                cout << "Nombre: "; cin >> nombre;
-                cout << "Prioridad: "; cin >> prioridad;
-                cpu.encolar(id, nombre, prioridad);
+                int id = leerEntero("Ingrese ID del proceso a encolar: ");
+                NodoProceso* p = gp.buscarPorID(id);
+                if (p != NULL) {
+                    cpu.encolar(p->id, p->nombre, p->prioridad);
+                } else {
+                    cout << "[ERROR] El ID " << id << " no existe en la lista de procesos.\n";
+                }
 
             } else if (subOp == 2) {
                 cpu.desencolar();
@@ -568,21 +558,22 @@ int main()
                 cpu.mostrar();
             }
 
-        //GESTOR DE MEMORIA
         } else if (op == 3) {
-            int subOp;
-            cout << "\n  GESTOR DE MEMORIA \n";
-            cout << "1. Asignar bloque de memoria\n";
-            cout << "2. Liberar ultimo bloque\n";
-            cout << "3. Ver estado de memoria\n";
-            cout << "Seleccione una opción: ";cin >> subOp;
+            cout << "\n--- GESTOR DE MEMORIA ---\n";
+            cout << "1. Asignar bloque de memoria a un proceso\n";
+            cout << "2. Liberar ultimo bloque asignado (Pop)\n";
+            cout << "3. Ver estado actual de memoria\n";
+            int subOp = leerEntero("Seleccione una sub-opcion: ");
 
             if (subOp == 1) {
-                int idBloque, tamanio, idProceso;
-                cout << "ID del bloque: "; cin >> idBloque;
-                cout << "Tamanio (MB): "; cin >> tamanio;
-                cout << "ID del proceso: "; cin >> idProceso;
-                mem.push(idBloque, tamanio, idProceso);
+                int idProceso = leerEntero("Ingrese ID del proceso asociado: ");
+                if (!gp.existeID(idProceso)) {
+                    cout << "[ERROR] El proceso con ID " << idProceso << " no esta registrado.\n";
+                } else {
+                    int idBloque = leerEntero("Ingrese ID para el bloque: ");
+                    int tamanio = leerEntero("Ingrese tamano del bloque (MB): ");
+                    mem.push(idBloque, tamanio, idProceso);
+                }
 
             } else if (subOp == 2) {
                 mem.pop();
@@ -591,13 +582,15 @@ int main()
                 mem.verificar();
             }
 
-        // GUARDAR 
         } else if (op == 4) {
             guardarSistema(gp, cpu, mem);
         }
 
     } while (op != 5);
 
-    cout << "\nHasta luego\n";
+    cout << "\nGuardando estado antes de salir...\n";
+    guardarSistema(gp, cpu, mem);
+    cout << "Saliendo del sistema. Hasta luego!\n";
+
     return 0;
 }
