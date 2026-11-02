@@ -257,3 +257,121 @@ void cargarSistema(GestorProcesos& gp, PlanificadorCPU& cpu, GestorMemoria& mem)
     archivo.close();
     cout << "Estado del sistema cargado correctamente." << "\n";
 }
+
+// MENÚ PRINCIPAL
+int main() {
+    GestorProcesos gp;
+    PlanificadorCPU cpu;
+    GestorMemoria mem;
+    // Cargar datos guardados al iniciar
+    cargarSistema(gp, cpu, mem);
+    int opcion;
+    do {
+        cout << "\n=======================================" << endl;
+        cout << "   SISTEMA DE GESTION DE PROCESOS      " << endl;
+        cout << "=======================================" << endl;
+        cout << "1. Gestor de Procesos" << endl;
+        cout << "2. Planificador de CPU" << endl;
+        cout << "3. Gestor de Memoria" << endl;
+        cout << "4. Guardar estado del sistema" << endl;
+        cout << "0. Salir" << endl;
+        cout << "Seleccione una opcion: ";
+        cin >> opcion;
+        // ---- MÓDULO 1: GESTOR DE PROCESOS ----
+        if (opcion == 1) {
+            int subOpcion;
+            cout << "\n-- GESTOR DE PROCESOS --" << endl;
+            cout << "1. Registrar proceso" << endl;
+            cout << "2. Eliminar proceso" << endl;
+            cout << "3. Buscar por ID" << endl;
+            cout << "4. Buscar por nombre" << endl;
+            cout << "5. Modificar prioridad" << endl;
+            cout << "6. Mostrar todos" << endl;
+            cout << "Seleccione: ";
+            cin >> subOpcion;
+            if (subOpcion == 1) {
+                int id, prioridad;
+                string nombre;
+                cout << "ID: "; cin >> id;
+                cout << "Nombre: "; cin >> nombre;
+                cout << "Prioridad: "; cin >> prioridad;
+                gp.insertar(id, nombre, prioridad);
+            } else if (subOpcion == 2) {
+                int id;
+                cout << "ID a eliminar: "; cin >> id;
+                gp.eliminar(id);
+            } else if (subOpcion == 3) {
+                int id;
+                cout << "ID a buscar: "; cin >> id;
+                gp.buscarPorID(id);
+            } else if (subOpcion == 4) {
+                string nombre;
+                cout << "Nombre a buscar: "; cin >> nombre;
+                gp.buscarPorNombre(nombre);
+            } else if (subOpcion == 5) {
+                int id, nuevaPrioridad;
+                cout << "ID del proceso: "; cin >> id;
+                cout << "Nueva prioridad: "; cin >> nuevaPrioridad;
+                gp.modificarPrioridad(id, nuevaPrioridad);
+            } else if (subOpcion == 6) {
+                gp.mostrar();
+            }
+        // ---- MÓDULO 2: PLANIFICADOR CPU ----
+        } else if (opcion == 2) {
+            int subOpcion;
+            cout << "\n-- PLANIFICADOR DE CPU --" << endl;
+            cout << "1. Encolar proceso" << endl;
+            cout << "2. Ejecutar siguiente proceso" << endl;
+            cout << "3. Ver cola actual" << endl;
+            cout << "Seleccione: ";
+            cin >> subOpcion;
+
+            if (subOpcion == 1) {
+                int id, prioridad;
+                string nombre;
+                cout << "ID: "; cin >> id;
+                cout << "Nombre: "; cin >> nombre;
+                cout << "Prioridad: "; cin >> prioridad;
+                cpu.encolar(id, nombre, prioridad);
+
+            } else if (subOpcion == 2) {
+                cpu.desencolar();
+
+            } else if (subOpcion == 3) {
+                cpu.mostrar();
+            }
+
+        // ---- MÓDULO 3: GESTOR DE MEMORIA ----
+        } else if (opcion == 3) {
+            int subOpcion;
+            cout << "\n-- GESTOR DE MEMORIA --" << endl;
+            cout << "1. Asignar bloque de memoria" << endl;
+            cout << "2. Liberar ultimo bloque" << endl;
+            cout << "3. Ver estado de memoria" << endl;
+            cout << "Seleccione: ";
+            cin >> subOpcion;
+
+            if (subOpcion == 1) {
+                int idBloque, tamanio, idProceso;
+                cout << "ID del bloque: "; cin >> idBloque;
+                cout << "Tamanio (MB): "; cin >> tamanio;
+                cout << "ID del proceso: "; cin >> idProceso;
+                mem.push(idBloque, tamanio, idProceso);
+
+            } else if (subOpcion == 2) {
+                mem.pop();
+
+            } else if (subOpcion == 3) {
+                mem.verificar();
+            }
+
+        // ---- GUARDAR ----
+        } else if (opcion == 4) {
+            guardarSistema(gp, cpu, mem);
+        }
+
+    } while (opcion != 0);
+
+    cout << "\nSistema cerrado. Hasta luego." << endl;
+    return 0;
+}
